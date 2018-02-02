@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: localhost
+  username: kidole
+  password: kidole
+
+development:
+  <<: *default
+  database: kidole_development
+
+test:
+  <<: *default
+  database: kidole_test
+
+production:
+  <<: *default
+  database: kidole_production
+  username: kidole
+  password: <%= ENV['KIDOLE_DATABASE_PASSWORD'] %>
