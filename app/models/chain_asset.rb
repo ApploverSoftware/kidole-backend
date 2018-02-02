@@ -1,0 +1,2 @@
+class ChainAsset < ApplicationRecord
+end

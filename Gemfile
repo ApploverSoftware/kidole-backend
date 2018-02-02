@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
@@ -6,6 +8,7 @@ git_source(:github) do |repo_name|
 end
 
 gem 'bcrypt'
+gem 'chain-sdk', '1.2.0', require: 'chain'
 gem 'coffee-rails', '~> 4.2'
 gem 'decent_exposure'
 gem 'jbuilder', '~> 2.5'
@@ -16,17 +19,15 @@ gem 'rubocop', require: false
 gem 'sass-rails', '~> 5.0'
 gem 'turbolinks', '~> 5'
 gem 'uglifier', '>= 1.3.0'
-gem 'chain-sdk', '1.2.0', require: 'chain'
-
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'capybara', '~> 2.13'
-  gem "pry"
-  gem "pry-byebug"
-  gem "pry-rails"
-  gem 'selenium-webdriver'
+  gem 'pry'
+  gem 'pry-byebug'
+  gem 'pry-rails'
   gem 'rspec-rails', '~> 3.7'
+  gem 'selenium-webdriver'
 end
 
 group :development do

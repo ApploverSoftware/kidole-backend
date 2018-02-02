@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if user.persisted?
   json.user do
     json.partial! user

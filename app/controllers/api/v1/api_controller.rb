@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class ApiController < ActionController::Base
-      before_action :authenticate_user
+      protect_from_forgery with: :null_session
       include ActionController::HttpAuthentication::Token::ControllerMethods
 
       rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
@@ -26,7 +28,7 @@ module Api
             return token.user
           end
         end
-        render json: { errors: [{ detail: "Access denied, wrong username or token" }] }, status: :unprocessable_entity
+        render json: { errors: [{ detail: 'Access denied, wrong username or token' }] }, status: :unprocessable_entity
       end
     end
   end

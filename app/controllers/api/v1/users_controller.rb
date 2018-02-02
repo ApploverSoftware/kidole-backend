@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class UsersController < Api::V1::ApiController
-      skip_before_action :authenticate_user, only: [:create]
+      skip_before_action :authenticate_user, only: %i[show create]
 
       expose :user
       expose :users, -> { User.all }

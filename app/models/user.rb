@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   after_create :create_chain_account
 
@@ -23,9 +25,9 @@ class User < ApplicationRecord
     signer.add_key(key, chain.mock_hsm.signer_conn)
 
     chain.accounts.create(
-        alias: username,
-        root_xpubs: [key.xpub],
-        quorum: 1
+      alias: username,
+      root_xpubs: [key.xpub],
+      quorum: 1
     )
     update(chain_key: key.xpub)
   end
