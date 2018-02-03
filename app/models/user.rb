@@ -45,7 +45,7 @@ class User < ApplicationRecord
       alias: asset_alias,
       root_xpubs: [asset_key.xpub],
       quorum: 1,
-      definition: Hash['phone_number', user.phone_number]
+      definition: Hash['phone_number', phone_number]
     )
 
     signer.add_key(asset_key, chain.mock_hsm.signer_conn)
