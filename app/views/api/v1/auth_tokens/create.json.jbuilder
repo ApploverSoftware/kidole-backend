@@ -1,6 +1,7 @@
 json.auth_token do
-  json.token @auth_token.token
-  json.device @auth_token.device
+  binding.pry
+  json.token @auth_token[:token]
+  json.device @auth_token[:device]
 end
 json.user do
   json.username @user.username
