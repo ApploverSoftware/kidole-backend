@@ -39,8 +39,8 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     signer.add_key(chain_asset.keys[0], chain.mock_hsm.signer_conn)
     signer.add_key(chain_asset.keys[1], chain.mock_hsm.signer_conn)
     tx = chain.transactions.build do |b|
-      b.issue asset_alias: params[:alias], amount: 9
-      b.control_with_account account_alias: current_user.username, asset_alias: params[:alias], amount: 9
+      b.issue asset_alias: params[:alias], amount: 1
+      b.control_with_account account_alias: current_user.username, asset_alias: params[:alias], amount: 1
     end
 
     signed_tx = signer.sign(tx)
@@ -52,8 +52,8 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     signer.add_key(user.chain_key, chain.mock_hsm.signer_conn)
     signer.add_key(current_user.chain_key, chain.mock_hsm.signer_conn)
     payment = chain.transactions.build do |b|
-      b.spend_from_account account_alias: current_user.username, asset_alias: params[:alias], amount: 9
-      b.control_with_account account_alias: user.username, asset_alias: params[:alias], amount: 9
+      b.spend_from_account account_alias: current_user.username, asset_alias: params[:alias], amount: 1
+      b.control_with_account account_alias: user.username, asset_alias: params[:alias], amount: 2
     end
 
     signed_payment = signer.sign(payment)
