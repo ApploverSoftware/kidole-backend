@@ -95,11 +95,11 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
   end
 
   def not_unique
-    render json: { errors: ["#{params[:name]} is already taken"] }, status: :unprocessable_entity
+    render json: { errors: ["#{params[:name]} is already taken"] }, status: 304
   end
 
   def duplicate_approval
-    render json: { errors: ["Approval between those users already occured"] }, status: :unprocessable_entity
+    render json: { errors: ["Approval between those users already occured"] }, status: 304
   end
 end
 
