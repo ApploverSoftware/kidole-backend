@@ -33,14 +33,14 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     chain_asset = ChainAsset.find_by(alias: params[:alias])
     signer = Chain::HSMSigner.new
     user = User.find_by(username: params[:username])
-    return duplicate_approval unless validate_single_approval(user, current_user)
+    return duplicate_approval unless validate_single_approval(user, current_user, params[:alias])
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
     signer.add_key(chain_asset.keys[0], chain.mock_hsm.signer_conn)
     signer.add_key(chain_asset.keys[1], chain.mock_hsm.signer_conn)
     tx = chain.transactions.build do |b|
-      b.issue asset_alias: params[:alias], amount: 1
-      b.control_with_account account_alias: current_user.username, asset_alias: params[:alias], amount: 1
+      b.issue asset_alias: params[:alias], amount: 9
+      b.control_with_account account_alias: current_user.username, asset_alias: params[:alias], amount: 9
     end
 
     signed_tx = signer.sign(tx)
@@ -52,8 +52,8 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     signer.add_key(user.chain_key, chain.mock_hsm.signer_conn)
     signer.add_key(current_user.chain_key, chain.mock_hsm.signer_conn)
     payment = chain.transactions.build do |b|
-      b.spend_from_account account_alias: current_user.username, asset_alias: params[:alias], amount: 1
-      b.control_with_account account_alias: user.username, asset_alias: params[:alias], amount: 1
+      b.spend_from_account account_alias: current_user.username, asset_alias: params[:alias], amount: 9
+      b.control_with_account account_alias: user.username, asset_alias: params[:alias], amount: 9
     end
 
     signed_payment = signer.sign(payment)
@@ -81,13 +81,13 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     return true if vals.empty?
   end
 
-  def validate_single_approval(user, current_user)
+  def validate_single_approval(user, current_user, ali)
     vals = []
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
     chain.transactions.query(
-        filter: 'inputs(account_alias=$1) OR outputs(account_alias=$2)',
-        filter_params: [current_user.username, user.username],
+        filter: 'inputs(account_alias=$1) AND outputs(account_alias=$2) AND asset_alias=$3',
+        filter_params: [current_user.username, user.username, ali],
     ).each do |tx|
       vals << tx.id
     end
@@ -102,3 +102,4 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     render json: { errors: ["Approval between those users already occured"] }, status: :unprocessable_entity
   end
 end
+
