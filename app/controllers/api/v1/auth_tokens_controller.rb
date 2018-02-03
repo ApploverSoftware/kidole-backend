@@ -7,11 +7,12 @@ module Api
       skip_before_action :authenticate_user, only: %i[create destroy]
 
       def create
-        user = User.find_by(username: params[:username])
-        return invalid_login_attempt unless user
-        if user.authenticate(params[:password])
-          auth_token = user.generate_auth_token
-          render json: { auth_token: auth_token, user: user }, status: :created
+        @user = User.find_by(username: params[:username])
+        return invalid_login_attempt unless @user
+        if @user.authenticate(params[:password])
+          @auth_token = @user.generate_auth_token
+          @stats = @user.get_balances
+          render status: :created
         else
           invalid_login_attempt
         end
