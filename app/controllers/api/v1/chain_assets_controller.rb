@@ -86,7 +86,7 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
     chain.transactions.query(
-        filter: 'inputs(account_alias=$1) AND outputs(account_alias=$2) AND asset_alias=$3',
+        filter: 'inputs(account_alias=$1 AND asset_alias=$3) AND outputs(account_alias=$2 AND asset_alias=$3)',
         filter_params: [current_user.username, user.username, ali],
     ).each do |tx|
       vals << tx.id
