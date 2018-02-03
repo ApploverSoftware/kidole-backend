@@ -5,5 +5,5 @@ if @user.persisted?
     json.partial! @user
   end
 else
-  json.errors user.errors.full_messages
+  json.errors @user.errors.full_messages
 end
