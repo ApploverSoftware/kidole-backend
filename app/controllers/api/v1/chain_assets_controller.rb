@@ -2,6 +2,7 @@
 
 class Api::V1::ChainAssetsController < Api::V1::ApiController
   def create
+    return not_unique unless check_uniqueness(params[:name], params[:value])
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
     signer = Chain::HSMSigner.new
@@ -47,5 +48,21 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
 
   def asset_params
     params.permit(:name, :alias, :value)
+  end
+  def check_uniqueness(name, value)
+    vals = []
+    chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
+                              url: Rails.application.secrets.chain_route)
+    balances = chain.balances.query(filter: "asset_definition.facebook_id=$1",
+                                    filter_params: ["2134123412341234"])
+    balances.each { |b|
+      b.sum_by['asset_alias']
+      vals << b.amount
+    }
+    return true if vals.empty?
+  end
+
+  def not_unique
+    render json: { errors: ["#{name} is already taken"] }, status: :unprocessable_entity
   end
 end
