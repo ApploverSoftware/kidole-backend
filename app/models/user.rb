@@ -12,7 +12,7 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :facebook_id, uniqueness: true, allow_nil: true
-  validate  :matching_passwords
+  validate  :matching_passwords, on: :create
 
   attr_accessor :password_confirmation
 
