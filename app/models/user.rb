@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   after_create :create_chain_account
+  after_create :validate_phone_number
 
   has_many :auth_tokens, dependent: :destroy
 
@@ -30,6 +31,30 @@ class User < ApplicationRecord
       quorum: 1
     )
     update(chain_key: key.xpub)
+  end
+
+  def validate_phone_number
+    chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
+                              url: Rails.application.secrets.chain_route)
+    signer = Chain::HSMSigner.new
+
+    asset_key = chain.mock_hsm.keys.create
+    asset_alias = "phone_number_#{current_user.username}"
+
+    chain.assets.create(
+        alias: asset_alias,
+        root_xpubs: [asset_key.xpub],
+        quorum: 1,
+        definition: Hash["phone_number", user.phone_number]
+    )
+
+    signer.add_key(asset_key, chain.mock_hsm.signer_conn)
+    tx = chain.transactions.build do |b|
+      b.issue asset_alias: asset_alias, amount: 1
+      b.control_with_account account_alias: username, asset_alias: asset_alias, amount: 1
+    end
+    signed_tx = signer.sign(tx)
+    chain.transactions.submit(signed_tx)
   end
 
   def generate_auth_token

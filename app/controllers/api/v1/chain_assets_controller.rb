@@ -83,7 +83,7 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     vals = []
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
-    txs = chain.transactions.query(
+    chain.transactions.query(
         filter: 'inputs(account_alias=$1) OR outputs(account_alias=$2)',
         filter_params: [current_user.username, user.username],
     ).each do |tx|
@@ -93,7 +93,7 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
   end
 
   def not_unique
-    render json: { errors: ["#{name} is already taken"] }, status: :unprocessable_entity
+    render json: { errors: ["#{params[:name]} is already taken"] }, status: :unprocessable_entity
   end
 
   def duplicate_approval
