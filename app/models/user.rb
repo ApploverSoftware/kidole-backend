@@ -60,6 +60,21 @@ class User < ApplicationRecord
     User.authenticated(token, login, device).destroy
   end
 
+  def get_balances
+    chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
+                             url: Rails.application.secrets.chain_route)
+    balances = {}
+    chain.balances.query(
+        filter: 'account_alias=$1',
+        filter_params: [username],
+    ).each do |b|
+      name = b.sum_by['asset_alias'].rpartition('_')[0]
+      name = name.blank? ? b.sum_by['asset_alias'] : name
+      balances[name] = b.amount
+    end
+    balances
+  end
+
   private
 
   def matching_passwords

@@ -17,6 +17,10 @@ module Api
         end
       end
 
+      def show
+        @stats = user.get_balances
+      end
+
       private
 
       def user_params

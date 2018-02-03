@@ -13,3 +13,13 @@ asset_key = chain.mock_hsm.keys.create.xpub
 asset_key2 = chain.mock_hsm.keys.create.xpub
 
 ChainAsset.create(alias: "disapproval", quorum: 2, keys: [asset_key, asset_key2])
+
+ChainAsset.skip_callback(:create, :after, :create_chain_asset)
+
+ChainAsset.create(alias: "facebook")
+ChainAsset.create(alias: "instagram")
+ChainAsset.create(alias: "phone_number")
+ChainAsset.create(alias: "email")
+ChainAsset.create(alias: "linked_in")
+
+ChainAsset.set_callback(:create, :after, :create_chain_asset)
