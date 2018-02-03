@@ -4,6 +4,7 @@ module Api
   module V1
     class ApiController < ActionController::Base
       protect_from_forgery with: :null_session
+      before_action :authenticate_user
       include ActionController::HttpAuthentication::Token::ControllerMethods
 
       rescue_from ActiveRecord::RecordNotFound, with: :record_not_found

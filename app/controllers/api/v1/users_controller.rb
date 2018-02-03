@@ -5,11 +5,12 @@ module Api
     class UsersController < Api::V1::ApiController
       skip_before_action :authenticate_user, only: %i[show create]
 
-      expose :user
+      expose :user, -> { User.find_by(username: params[:username])}
       expose :users, -> { User.all }
 
       def create
-        if user.save
+        @user = User.new(user_params)
+        if @user.save
           render status: :created
         else
           render status: :unprocessable_entity

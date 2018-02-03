@@ -27,6 +27,8 @@ ActiveRecord::Schema.define(version: 20180202222705) do
   create_table "chain_assets", force: :cascade do |t|
     t.string "alias"
     t.string "definition"
+    t.string "keys"
+    t.integer "quorum"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
