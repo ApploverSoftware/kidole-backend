@@ -19,6 +19,7 @@ module Api
       end
 
       def show
+        return record_not_found unless user
         @stats = user.get_balances
       end
 
