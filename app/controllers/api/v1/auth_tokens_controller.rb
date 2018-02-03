@@ -3,6 +3,7 @@
 module Api
   module V1
     class AuthTokensController < Api::V1::ApiController
+      protect_from_forgery with: :null_session
       skip_before_action :authenticate_user, only: %i[create destroy]
 
       def create

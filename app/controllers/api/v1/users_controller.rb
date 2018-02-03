@@ -3,6 +3,7 @@
 module Api
   module V1
     class UsersController < Api::V1::ApiController
+      protect_from_forgery with: :null_session
       skip_before_action :authenticate_user, only: %i[show create]
 
       expose :user, -> { User.find_by(username: params[:username])}

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::ChainAssetsController < Api::V1::ApiController
+  protect_from_forgery with: :null_session
+
   def create
     return not_unique unless check_uniqueness(params[:name], params[:value])
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
