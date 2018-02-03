@@ -13,10 +13,10 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     asset_alias = "#{asset_params[:alias]}_#{current_user.username}"
 
     chain.assets.create(
-        alias: asset_alias,
-        root_xpubs: [asset_key.xpub],
-        quorum: 1,
-        definition: Hash[asset_params[:name], asset_params[:value]]
+      alias: asset_alias,
+      root_xpubs: [asset_key.xpub],
+      quorum: 1,
+      definition: Hash[asset_params[:name], asset_params[:value]]
     )
 
     signer.add_key(asset_key, chain.mock_hsm.signer_conn)
@@ -33,6 +33,7 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     chain_asset = ChainAsset.find_by(alias: params[:alias])
     signer = Chain::HSMSigner.new
     user = User.find_by(username: params[:username])
+    return self_approval if current_user.id == user.id
     return duplicate_approval unless validate_single_approval(user, current_user, params[:alias])
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
@@ -74,10 +75,10 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
                               url: Rails.application.secrets.chain_route)
     balances = chain.balances.query(filter: "asset_definition.#{name}=$1",
                                     filter_params: [value])
-    balances.each { |b|
+    balances.each do |b|
       b.sum_by['asset_alias']
       vals << b.amount
-    }
+    end
     return true if vals.empty?
   end
 
@@ -86,8 +87,8 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
                               url: Rails.application.secrets.chain_route)
     chain.transactions.query(
-        filter: 'inputs(account_alias=$1 AND asset_alias=$3) AND outputs(account_alias=$2 AND asset_alias=$3)',
-        filter_params: [current_user.username, user.username, ali],
+      filter: 'inputs(account_alias=$1 AND asset_alias=$3) AND outputs(account_alias=$2 AND asset_alias=$3)',
+      filter_params: [current_user.username, user.username, ali]
     ).each do |tx|
       vals << tx.id
     end
@@ -99,7 +100,10 @@ class Api::V1::ChainAssetsController < Api::V1::ApiController
   end
 
   def duplicate_approval
-    render json: { errors: ["Approval between those users already occured"] }, status: 304
+    render json: { errors: ['Approval between those users already occured'] }, status: 304
+  end
+
+  def self_approval
+    render json: { errors: ['You can not approve/disapprove yourself'] }, status: 304
   end
 end
-

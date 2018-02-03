@@ -42,10 +42,10 @@ class User < ApplicationRecord
     asset_alias = "phone_number_#{username}"
 
     chain.assets.create(
-        alias: asset_alias,
-        root_xpubs: [asset_key.xpub],
-        quorum: 1,
-        definition: Hash["phone_number", user.phone_number]
+      alias: asset_alias,
+      root_xpubs: [asset_key.xpub],
+      quorum: 1,
+      definition: Hash['phone_number', user.phone_number]
     )
 
     signer.add_key(asset_key, chain.mock_hsm.signer_conn)
@@ -87,11 +87,11 @@ class User < ApplicationRecord
 
   def get_balances
     chain = Chain::Client.new(access_token: Rails.application.secrets.chain_token,
-                             url: Rails.application.secrets.chain_route)
+                              url: Rails.application.secrets.chain_route)
     balances = {}
     chain.balances.query(
-        filter: 'account_alias=$1',
-        filter_params: [username],
+      filter: 'account_alias=$1',
+      filter_params: [username]
     ).each do |b|
       name = b.sum_by['asset_alias'].rpartition('_')[0]
       name = name.blank? ? b.sum_by['asset_alias'] : name

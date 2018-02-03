@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.auth_token do
   json.token @auth_token[:token]
   json.device @auth_token[:device]
@@ -9,9 +11,9 @@ json.user do
   json.last_name @user.last_name
   json.balances do
     ChainAsset.where('quorum IS NULL').each do |chain_asset|
-      json.set!chain_asset.alias, @stats[chain_asset.alias] ? true : false
+      json.set! chain_asset.alias, @stats[chain_asset.alias] ? true : false
     end
-    json.approval @stats["approval"] ? @stats["approval"] : 0
-    json.disapproval @stats["disapproval"] ? @stats["disapproval"] : 0
+    json.approval @stats['approval'] ? @stats['approval'] : 0
+    json.disapproval @stats['disapproval'] ? @stats['disapproval'] : 0
   end
 end
