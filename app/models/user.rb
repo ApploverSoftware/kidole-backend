@@ -39,7 +39,7 @@ class User < ApplicationRecord
     signer = Chain::HSMSigner.new
 
     asset_key = chain.mock_hsm.keys.create
-    asset_alias = "phone_number_#{current_user.username}"
+    asset_alias = "phone_number_#{username}"
 
     chain.assets.create(
         alias: asset_alias,
